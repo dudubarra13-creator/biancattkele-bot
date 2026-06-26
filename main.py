@@ -24,11 +24,7 @@ PACK_NAME = os.environ.get("PACK_NAME", "Acesso às 12 fotos reservadas").strip(
 PACK_PRICE = float(os.environ.get("PACK_PRICE", "14.90").replace(",", "."))
 PACK_LINK = os.environ.get("PACK_LINK", "").strip()
 
-PACK_PHOTO_FILE_IDS = [
-    item.strip()
-    for item in os.environ.get("PACK_PHOTO_FILE_IDS", "").split(",")
-    if item.strip()
-]
+PREVIEW_PHOTO_FILE_ID = os.environ.get("PREVIEW_PHOTO_FILE_ID", "").strip()
 
 # Memória temporária
 USER_STATE = {}
@@ -160,10 +156,13 @@ def money_br(value):
     return f"R$ {value:.2f}".replace(".", ",")
 
 
-def age_gate_keyboard():
+def main_menu_keyboard():
     return [
-        [{"text": "✅ Tenho 18+ e quero entrar", "callback_data": "confirm_18"}],
-        [{"text": "❌ Sair", "callback_data": "exit"}],
+        [{"text": "👀 Quer ver uma prévia?", "callback_data": "see_photos"}],
+        [{"text": f"🔥 12 fotos quentes da Bianca - {money_br(PACK_PRICE)}", "callback_data": "buy_pack"}],
+        [{"text": "💎 Lista VIP", "callback_data": "vip_list"}],
+        [{"text": "📜 Termos do acesso", "callback_data": "terms"}],
+        [{"text": "💬 Suporte", "callback_data": "support"}],
     ]
 
 
@@ -230,18 +229,27 @@ def send_main_menu(chat_id):
 
 
 def send_photos_preview(chat_id):
+    if PREVIEW_PHOTO_FILE_ID:
+        send_photo_file_id(
+            chat_id,
+            PREVIEW_PHOTO_FILE_ID,
+            caption="Uma prévia discreta do que a Bianca separou pra você 👀💋"
+        )
+    else:
+        send_message(
+            chat_id,
+            "A prévia ainda está sendo preparada 👀💋"
+        )
+
     text = (
-        "👀 O que você encontra aqui:\n\n"
-        "• 12 fotos sensuais da Bianca Monteiro\n"
-        "• clima íntimo, elegante e reservado\n"
-        "• conteúdo adulto, sem nudez explícita\n"
-        "• entrega pelo Telegram após confirmação do acesso\n\n"
-        "É aquele tipo de foto que fica fora das redes sociais. "
-        "Mais privada, mais próxima, mais Bianca. 💋"
+        "Gostou da prévia? 💋\n\n"
+        "As 12 fotos completas são mais íntimas, sensuais e reservadas, "
+        "feitas para quem quer ver um lado da Bianca que não aparece nas redes.\n\n"
+        "Conteúdo adulto, sem nudez explícita, com entrega automática após confirmação do Pix."
     )
 
     send_message(chat_id, text, [
-        [{"text": "💋 Quero liberar as 12 fotos", "callback_data": "buy_pack"}],
+        [{"text": f"🔥 Quero as 12 fotos - {money_br(PACK_PRICE)}", "callback_data": "buy_pack"}],
         [{"text": "⬅️ Voltar", "callback_data": "back_menu"}],
     ])
 
